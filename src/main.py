@@ -1,4 +1,4 @@
-from utils.helpers import get_completion, parse_yaml_response, display_explanation
+from utils.helpers import setup_logging, get_completion, parse_yaml_response, display_explanation
 
 def main():
     # Ask for user input
@@ -20,4 +20,5 @@ def main():
         print(parsed_response)
 
 if __name__ == "__main__":
+    setup_logging()
     main() 

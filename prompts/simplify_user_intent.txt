@@ -5,7 +5,7 @@ The concept the user wants to learn is: {user_intent}.
 Ensure that your explanation is coherent, consistent, and flows naturally from one step to the next. 
 Provide vivid, creative descriptions for the images to help the user visualize the ideas clearly. 
 Always aim to make the explanation engaging and easy to follow.
-curate your response using the following YAML schema (do not comment in your yaml):
+curate your response using the following YAML schema (do not comment in your yaml, be less wordy, unless for image_description):
 title: "[Introduce the concept in a simple and engaging way]"
 introduction:"[Brief overview that sets the context for the concept, using non-technical language.]"
 steps:

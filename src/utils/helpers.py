@@ -8,6 +8,7 @@ from config.config_manager import ConfigManager
 import yaml
 from docx import Document
 from docx.shared import Inches, Pt
+import sys
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -19,6 +20,32 @@ config = ConfigManager()
 client = OpenAI(
     api_key=config.get('openai.api_key')
 )
+
+def setup_logging():
+    """Configure logging to output to both file and console."""
+    # Create logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    
+    # Create formatters
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    # Create console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
+    console_handler.setLevel(logging.DEBUG)
+    
+    # Create file handler
+    file_handler = logging.FileHandler('debug.log')
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.DEBUG)
+    
+    # Add handlers to logger
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+# Call this function at the start of your application
+setup_logging()
 
 def load_system_prompt(file_path: str) -> str:
     """Load system prompt from file."""
@@ -76,7 +103,7 @@ def parse_yaml_response(yaml_str: str) -> Union[Dict, str]:
         )
         return yaml.safe_load(cleaned_str)
     except yaml.YAMLError as e:
-        print(f"Error parsing YAML: {e}")
+        logger.error(f"Error parsing YAML: {e}\nInput that caused error:\n{'-' * 50}\n{cleaned_str}\n{'-' * 50}")
         return yaml_str
 
 def get_completion(user_intent: str) -> str:
@@ -172,7 +199,7 @@ def display_explanation(explanation_dict: Dict, user_intent: str):
         
         for step in explanation_dict['steps']:
             # Add step heading
-            doc.add_heading(f"Step {step['step_number']}: {step['heading']}", level=1)
+            doc.add_heading(f"{step['heading']}", level=1)
             
             # Add step text
             doc.add_paragraph(step['text'])
@@ -182,19 +209,14 @@ def display_explanation(explanation_dict: Dict, user_intent: str):
             if os.path.exists(image_path):
                 # Add image description before
                 desc_para = doc.add_paragraph()
-                desc_para.add_run("Image Description: ").bold = True
                 desc_para.add_run(step['image_description'])
                 
                 # Add the image
                 doc.add_picture(image_path, width=Inches(6))
-                
-                # Add image description after (optional - you can remove if you don't want both)
-                doc.add_paragraph(f"Image Description: {step['image_description']}")
-            
+
             # Add transition if it exists
             if 'transition' in step:
                 transition_para = doc.add_paragraph()
-                transition_para.add_run("Transition: ").bold = True
                 transition_para.add_run(step['transition'])
         
         # Add conclusion
