@@ -1,0 +1,8 @@
+openai:
+  model: "chatgpt-4o-latest"
+  api_key: ${OPENAI_API_KEY}
+  system_prompt_path: "prompts/simplify_user_intent.txt"
+
+chat:
+  temperature: 0.7
+  max_tokens: 1000
