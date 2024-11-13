@@ -6,6 +6,8 @@ import requests
 from openai import OpenAI
 from config.config_manager import ConfigManager
 import yaml
+from docx import Document
+from docx.shared import Inches, Pt
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -144,27 +146,68 @@ def generate_and_save_images(explanation_dict: Dict, user_intent: str):
         raise
 
 def display_explanation(explanation_dict: Dict, user_intent: str):
-    """Display the parsed explanation and generate images."""
+    """Display the parsed explanation and generate images and Word document."""
     logger.info("Starting explanation display")
     
     try:
-        logger.info(f"Title: {explanation_dict['title']}")
-        logger.info(f"Introduction: {explanation_dict['introduction']}")
+        # Create Word document
+        doc = Document()
         
+        # Create output folder
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        sanitized_intent = "".join(c for c in user_intent if c.isalnum() or c in (' ', '-', '_')).strip()
+        sanitized_intent = sanitized_intent.replace(' ', '_').lower()
+        output_folder = os.path.join("output", f"{timestamp}_{sanitized_intent}")
+        os.makedirs(output_folder, exist_ok=True)
+        
+        # Add title
+        doc.add_heading(explanation_dict['title'], 0)
+        
+        # Add introduction
+        doc.add_paragraph(explanation_dict['introduction'])
+        
+        # Generate images and add steps
         images_folder = generate_and_save_images(explanation_dict, user_intent)
         logger.info(f"Images saved in: {images_folder}")
         
         for step in explanation_dict['steps']:
-            logger.info(f"Step {step['step_number']}: {step['heading']}")
-            logger.info(f"Text: {step['text']}")
-            logger.info(f"Image Description: {step['image_description']}")
-            logger.info(f"Image saved as: {images_folder}/step_{step['step_number']}.png")
+            # Add step heading
+            doc.add_heading(f"Step {step['step_number']}: {step['heading']}", level=1)
+            
+            # Add step text
+            doc.add_paragraph(step['text'])
+            
+            # Add image if it exists
+            image_path = os.path.join(images_folder, f"step_{step['step_number']}.png")
+            if os.path.exists(image_path):
+                # Add image description before
+                desc_para = doc.add_paragraph()
+                desc_para.add_run("Image Description: ").bold = True
+                desc_para.add_run(step['image_description'])
+                
+                # Add the image
+                doc.add_picture(image_path, width=Inches(6))
+                
+                # Add image description after (optional - you can remove if you don't want both)
+                doc.add_paragraph(f"Image Description: {step['image_description']}")
+            
+            # Add transition if it exists
             if 'transition' in step:
-                logger.info(f"Transition: {step['transition']}")
+                transition_para = doc.add_paragraph()
+                transition_para.add_run("Transition: ").bold = True
+                transition_para.add_run(step['transition'])
         
-        logger.info(f"Conclusion: {explanation_dict['conclusion']}")
-        logger.info("Completed explanation display")
+        # Add conclusion
+        doc.add_heading('Conclusion', level=1)
+        doc.add_paragraph(explanation_dict['conclusion'])
+        
+        # Save the document
+        doc_path = os.path.join(output_folder, f"{sanitized_intent}.docx")
+        doc.save(doc_path)
+        logger.info(f"Document saved as: {doc_path}")
+        
+        return output_folder
         
     except Exception as e:
-        logger.error("Error displaying explanation", exc_info=True)
+        logger.error("Error creating explanation document", exc_info=True)
         raise 
