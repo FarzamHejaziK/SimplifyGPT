@@ -1,13 +1,29 @@
 import streamlit as st
 import time
 import logging
-from utils import setup_logging, get_completion, parse_yaml_response, display_explanation
+
 from pathlib import Path
 from docx import Document
 import base64
 from PIL import Image
+import sys
+import os
 
 logger = logging.getLogger(__name__)
+
+# Print debug information to verify paths
+print(f"Working directory: {os.getcwd()}")
+print(f"sys.path before: {sys.path}")
+
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+    print(f"sys.path after: {sys.path}")
+
+from utils import setup_logging, get_completion, parse_yaml_response, display_explanation
+
+
 
 def setup_page():
     """Configure the Streamlit page."""
