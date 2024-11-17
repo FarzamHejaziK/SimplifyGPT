@@ -2,11 +2,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: SimplifyGPT",
+            "name": "Streamlit: Dev",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
-            "console": "integratedTerminal",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/src/app.py",
+                "--server.runOnSave=true",
+                "--logger.level=info"
+            ],
             "justMyCode": true,
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"

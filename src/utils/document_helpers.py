@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 import logging
 from typing import Union, Dict
+from utils.image_helpers import generate_and_save_images
 
 logger = logging.getLogger(__name__)
 

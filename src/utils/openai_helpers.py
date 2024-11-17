@@ -22,7 +22,9 @@ def get_completion(user_intent: str) -> str:
                 "role": "system", 
                 "content": formatted_prompt
             }
-        ]
+        ],
+        temperature=config.get('chat.temperature'),
+        max_tokens=config.get('chat.max_tokens')
     )
 
     return completion.choices[0].message.content 

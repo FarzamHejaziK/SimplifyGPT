@@ -1,0 +1,11 @@
+[server]
+runOnSave = true
+port = 8501
+
+[logger]
+level = "info"
+messageFormat = "%(asctime)s %(message)s"
+
+[browser]
+serverAddress = "localhost"
+gatherUsageStats = false
