@@ -9,3 +9,6 @@ messageFormat = "%(asctime)s %(message)s"
 [browser]
 serverAddress = "localhost"
 gatherUsageStats = false
+
+[runner]
+scriptDirectory = "src"
