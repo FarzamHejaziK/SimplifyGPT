@@ -13,11 +13,17 @@ logger = logging.getLogger(__name__)
 
 def generate_dalle_image(client: OpenAI, prompt: str) -> str:
     """Generate DALL-E image in a separate thread."""
+    config = ConfigManager()
+    # Remove first word from prompt
+    prompt_words = prompt.split()
+    if len(prompt_words) > 1:
+        prompt = ' '.join(prompt_words[1:])
+        logger.info(f"Generating DALL-E image with prompt: {prompt}")
     response = client.images.generate(
         model="dall-e-3",
         prompt=prompt,
-        size="1024x1024",
-        quality="standard",
+        size=config.get('image_generation.size'),
+        quality=config.get('image_generation.quality'),
         n=1,
     )
     return response.data[0].url
@@ -77,7 +83,6 @@ async def generate_images_async(explanation_dict: Dict, folder_name: str) -> Non
                 generate_single_image(client, step, folder_name, session, executor, start_time)
                 for step in explanation_dict['steps']
             ]
-            
             logger.info(f"Created {len(tasks)} concurrent tasks at {time.time() - start_time:.2f}s")
             await asyncio.gather(*tasks)
             

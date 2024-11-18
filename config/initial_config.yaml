@@ -6,3 +6,8 @@ openai:
 chat:
   temperature: 0
   max_tokens: 4000
+
+
+image_generation:
+  size: "1024x1024"  
+  quality: "standard" 
