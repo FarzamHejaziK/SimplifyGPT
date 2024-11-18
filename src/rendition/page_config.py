@@ -3,7 +3,7 @@ import streamlit as st
 def render_page_config():
     """Configure the Streamlit page layout and styling."""
     st.set_page_config(
-        page_title="Simplify It",
+        page_title="Simplify The World!",
         page_icon="💡",
         layout="wide"
     )
@@ -45,11 +45,11 @@ def _render_custom_styles():
         /* Subtitle */
         .subtitle {
             font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             color: #666;
             margin-top: 0;
-            margin-bottom: 3rem;
-            line-height: 1.5;
+            margin-bottom: 0;
+            line-height: 1;
         }
         
         /* Updated input field style */
@@ -85,7 +85,7 @@ def _render_header():
     st.markdown("""
         <div class="header-container">
             <div class="header-emoji">💡</div>
-            <h1 class="header-title">Simplify It</h1>
+            <h1 class="header-title">Simplify The World!</h1>
         </div>
         <p class="subtitle">Let's make the world more simple.</p>
     """, unsafe_allow_html=True) 
